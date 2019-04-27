@@ -1,21 +1,19 @@
 <template>
     <Page>
-        <ActionBar title="Welcome to Yellow Bucket!" android:flat="true"/>
-        <TabView tabBackgroundColor="#711537"
+        <ActionBar title="Welcome to Nathanael's Yellow Bucket!" android:flat="true" style="background-color:#272324;color:#E4D8B4"/>
+        <TabView tabBackgroundColor="#E2CD6D"
                  androidSelectedTabHighlightColor="#ffffff"
-                 tabTextColor="#999999"
-                 selectedTabTextColor="#ffffff">
+                 tabTextColor="#83B799"
+                 selectedTabTextColor="#E86F68">
             <TabViewItem title="Movies">
-                <GridLayout columns="*" rows="*">
-                    <Label class="message" :text="msg" col="0" row="0" textWrap="true" />
-                </GridLayout>
+            <movie-component :movies="movies"></movie-component>
             </TabViewItem>
             <TabViewItem title="Customers">
                 <customer-component :customers="customers"></customer-component>
             </TabViewItem>
             <TabViewItem title="About">
                 <GridLayout columns="*" rows="*">
-                    <Label class="message" text="About Yellow Bucket" col="0" row="0"/>
+                    <Label class="message" text="Building an app isn't as easy as it looks" col="0" row="0"/>
                 </GridLayout>
             </TabViewItem>
         </TabView>
@@ -24,7 +22,16 @@
 
 <script>
     import axios from "axios";
+    import MovieComponent from '@/components/MovieComponent.vue';
     import CustomerComponent from '@/components/CustomerComponent.vue';
+
+    function Movie({id, title, length, description})
+    {
+    this.id = parseInt(id);
+    this.title = title;
+    this.length = length;
+    this.description = description;
+    }
 
     function Customer({id, name, email, isAdmin}) {
         this.id = parseInt(id);
@@ -37,7 +44,8 @@
         data() {
             return {
                 msg: 'This is where you put you Movie code!  Good luck!',
-                customers: []
+                customers: [],
+                movies: []
             }
         },
         methods: {
@@ -52,10 +60,19 @@
                 })
             }, error => {
                 console.error(error);
+            }),
+            axios.get("https://codeflare.tech/api/movies").then(result => {
+                result.data.forEach(movie => {
+                    this.movies.push(new Movie(movie));
+                })
+            }, error => {
+                console.error(error);
             })
+
         },
         components: {
-            CustomerComponent
+            CustomerComponent,
+            MovieComponent
         }
     }
 </script>
